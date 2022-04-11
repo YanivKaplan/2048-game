@@ -1,0 +1,7 @@
+autopep8==1.6.0
+click==8.1.2
+colorama==0.4.4
+keyboard==0.13.5
+numpy==1.22.3
+pycodestyle==2.8.0
+toml==0.10.2
