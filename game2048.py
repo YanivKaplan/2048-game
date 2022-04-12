@@ -2,7 +2,7 @@ from enum import Enum
 import numpy as np
 import random
 import math
-
+import copy
 
 class GameStatus(Enum):
     RUNNING = 1
@@ -18,50 +18,57 @@ class ArrowDirection(Enum):
 
 
 class Game2048:
-    def __init__(self):
-        self._board = self._initialize_board()
+    def __init__(self, board = None):
+        if board is None:
+            self._board = self.__initialize_board()
+        else:
+            self._board = board
         self.game_status = GameStatus.RUNNING
 
     def get_board(self):
         return self._board
 
-    def step_board_forward(self, direction):
+    def step_board_forward(self, direction, prevent_new_number = False):
         if direction not in ArrowDirection:
             return None
 
         # rotating so it would be like RIGHT move
         new_board = self._board
-        if direction is ArrowDirection.LEFT:
-            new_board = np.fliplr(new_board)
-        elif direction is ArrowDirection.UP:
-            new_board = np.transpose(new_board)
-            new_board = np.fliplr(new_board)
-        elif direction is ArrowDirection.DOWN:
-            new_board = np.transpose(new_board)
+        new_board = self.__rotate_to_right(direction, new_board)
+        new_board = self.__calc_next_right_dir(new_board, prevent_new_number)
+        self._board = self.__rotate_back(direction, new_board)
 
-        new_board = self.__calc_next_right_dir(new_board)
-
+    def __rotate_back(self, direction, board):
         # rotating back
         if direction is ArrowDirection.LEFT:
-            new_board = np.fliplr(new_board)
+            board = np.fliplr(board)
         elif direction is ArrowDirection.UP:
-            new_board = np.fliplr(new_board)
-            new_board = np.transpose(new_board)
+            board = np.fliplr(board)
+            board = np.transpose(board)
         elif direction is ArrowDirection.DOWN:
-            new_board = np.transpose(new_board)
+            board = np.transpose(board)
+        return board
 
-        self._board = new_board
+    def __rotate_to_right(self, direction, board):
+        if direction is ArrowDirection.LEFT:
+            board = np.fliplr(board)
+        elif direction is ArrowDirection.UP:
+            board = np.transpose(board)
+            board = np.fliplr(board)
+        elif direction is ArrowDirection.DOWN:
+            board = np.transpose(board)
+        return board
 
-    def _initialize_board(self):
+    def __initialize_board(self):
         new_board = np.zeros(16)
         initial_indices_with_2 = random.sample(
             range(0, new_board.size), 2)
         new_board[initial_indices_with_2] = 2
         return new_board.reshape(int(math.sqrt(16)), int(math.sqrt(16)))
 
-    def __calc_next_right_dir(self, board):
+    def __calc_next_right_dir(self, board, prevent_new_number):
         row_num = 0
-        before_board = board
+        before_board = copy.copy(board)
         for row in board:
             new_row = self.__cumsum_row(row)
             board[row_num, :] = new_row
@@ -74,7 +81,7 @@ class Game2048:
             if len(all_zeros_indices[0]) == 0:
                 self.game_status = GameStatus.LOSS
                 return board
-            if before_board != board:
+            if not np.array_equal(before_board,board) and not prevent_new_number:
                 board = self.__add_new_2(board, all_zeros_indices)
 
         return board
