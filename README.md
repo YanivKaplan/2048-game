@@ -6,8 +6,8 @@ This is a remake of the popular mobile game 2048. The objective of the game is t
 ## Getting Started 
 
 ## Instructions for Gameplay
-User will use the arrow keys to move the tiles on the board. If two tiles of the same value are moved and are next to each other then 
-they will merge into one tile with a value of the sum of the two tiles. Game ends when the user decides to quit or when there are no more possible moves left. 
+User will use the arrow keys in number panel, to move the tiles on the board. If two tiles of the same value are moved and are next to each other then they will merge into one tile with a value of the sum of the two tiles. A win is declared when a 2048 sum is reached in one of the tiles.
+Game ends when the user decides to quit or when there are no more possible moves left. 
 
 
 ## Built With
