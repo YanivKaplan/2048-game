@@ -61,6 +61,7 @@ class Game2048:
 
     def __calc_next_right_dir(self, board):
         row_num = 0
+        before_board = board
         for row in board:
             new_row = self.__cumsum_row(row)
             board[row_num, :] = new_row
@@ -73,7 +74,8 @@ class Game2048:
             if len(all_zeros_indices[0]) == 0:
                 self.game_status = GameStatus.LOSS
                 return board
-            board = self.__add_new_2(board, all_zeros_indices)
+            if before_board != board:
+                board = self.__add_new_2(board, all_zeros_indices)
 
         return board
 
